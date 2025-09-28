@@ -1,3 +1,4 @@
+@import "tailwindcss";
 /* ===== 기본 스타일 ===== */
 body {
   font-family: Arial, sans-serif;
@@ -118,4 +119,21 @@ body {
 
 .render-container__item-button:hover {
   background-color: #c82333;
+}
+/* ---- Tailwind 다크모드와 충돌 최소화 ---- */
+body {
+  display: block !important;
+  height: auto !important;
+  background: transparent !important; /* 바깥 배경은 Tailwind로 */
+  margin: 0;
+}
+
+.todo-container {
+  background: transparent !important; /* 카드 배경도 Tailwind로 제어 */
+}
+
+/* 전환 부드럽게 */
+.todo-container__button,
+.todo-container__input {
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease;
 }
