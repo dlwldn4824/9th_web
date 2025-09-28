@@ -1,61 +1,40 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type PropsWithChildren } from "react";
 
-type ThemeContextValue = {
-  isDark: boolean;
+type Theme = "light" | "dark";
+
+interface IThemeContext {
+  theme: Theme;
   toggle: () => void;
-  setDark: (v: boolean) => void;
-};
+  setTheme: (t: Theme) => void;
+}
 
-const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+const ThemeContext = createContext<IThemeContext | undefined>(undefined);
 
-export default function ThemeProvider({ children }: { children: ReactNode }) {
-  const getInitial = () => {
-    try {
-      const saved = localStorage.getItem("theme");
-      if (saved === "dark") return true;
-      if (saved === "light") return false;
-      return window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false;
-    } catch {
-      return false;
-    }
-  };
+export const ThemeProvider = ({ children }: PropsWithChildren): JSX.Element => {
+  const [theme, setThemeState] = useState<Theme>(() => {
+    const saved = localStorage.getItem("theme") as Theme | null;
+    if (saved) return saved;
+    // 시스템 기본값
+    const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+    return prefersDark ? "dark" : "light";
+  });
 
-  const [isDark, setIsDark] = useState<boolean>(getInitial);
+  const setTheme = (t: Theme) => setThemeState(t);
+  const toggle = () => setThemeState((prev) => (prev === "light" ? "dark" : "light"));
 
+  // html에 data-theme 속성 달고, localStorage 반영
   useEffect(() => {
-    const root = document.documentElement; // <html>
-    // 확실하게 토글
-    root.classList.toggle("dark", isDark);
-    // 접근성/디버깅용 보조 표식
-    root.setAttribute("data-theme", isDark ? "dark" : "light");
-    try {
-      localStorage.setItem("theme", isDark ? "dark" : "light");
-    } catch {}
-    // 디버깅 로그(원하면 지워도 됨)
-    // console.log("[Theme] isDark=", isDark, "html.classList=", root.className);
-  }, [isDark]);
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
-  const value = useMemo<ThemeContextValue>(
-    () => ({
-      isDark,
-      toggle: () => setIsDark((v) => !v),
-      setDark: (v: boolean) => setIsDark(v),
-    }),
-    [isDark]
-  );
+  const value = useMemo(() => ({ theme, toggle, setTheme }), [theme]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
-}
+};
 
-export function useTheme() {
+export const useTheme = (): IThemeContext => {
   const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error("useTheme must be used within ThemeProvider");
+  if (!ctx) throw new Error("useTheme은 ThemeProvider 내부에서 사용해야 합니다.");
   return ctx;
-}
+};

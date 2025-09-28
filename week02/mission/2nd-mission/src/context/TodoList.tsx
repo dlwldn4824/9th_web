@@ -1,4 +1,4 @@
-// src/components/TodoList.tsx
+// TodoList.tsx
 import type { TTodo } from "../types/todo";
 
 type ButtonVariant = "success" | "danger";
@@ -7,7 +7,7 @@ interface TodoListProps {
   title: string;
   todos: TTodo[];
   buttonLabel: string;
-  variant: ButtonVariant;                // =여기 수정
+  variant: ButtonVariant;        // ✅ new
   onClick: (todo: TTodo) => void;
 }
 
@@ -19,7 +19,10 @@ export const TodoList = ({ title, todos, buttonLabel, variant, onClick }: TodoLi
         {todos.map((todo) => (
           <li key={todo.id} className="render-container__item">
             <span className="render-container__item-text">{todo.text}</span>
-            <button onClick={() => onClick(todo)} className={`btn btn--${variant}`}>
+            <button
+              onClick={() => onClick(todo)}
+              className={`btn btn--${variant}`}   // ✅ 클래스 기반
+            >
               {buttonLabel}
             </button>
           </li>
