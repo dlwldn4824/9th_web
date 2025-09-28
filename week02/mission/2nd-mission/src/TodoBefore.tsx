@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react"
-import type { TTodo } from "../types/todo" // 교안이랑 다르게 type으로 지정 안해주면 오류가 났음
+import type { TTodo } from "./types/todo" // 교안이랑 다르게 type으로 지정 안해주면 오류가 났음
 
 const TodoBefore = ():Element => {
     const [todos, setTodos] =useState<TTodo[]>([]);

@@ -1,20 +1,26 @@
-import type { FormEvent, Dispatch, SetStateAction } from "react";
+import { useState, type FormEvent } from "react";
+import { useTodoDispatch } from "../context/TodoContext";
 
-interface TodoFormProps {
-  input: string;
-  setInput: Dispatch<SetStateAction<string>>; // (input: string) => void 도 가능
-  handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
-}
+export const TodoForm = () => {
+  const dispatch = useTodoDispatch();
+  const [input, setInput] = useState<string>("");
 
-export const TodoForm = ({ input, setInput, handleSubmit }: TodoFormProps) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const text = input.trim();
+    if (!text) return;
+    dispatch({ type: "ADD", text });
+    setInput("");
+  };
+
   return (
     <form onSubmit={handleSubmit} className="todo-container__form">
       <input
         value={input}
-        onChange={(e): void => setInput(e.target.value)}
+        onChange={(e) => setInput(e.target.value)}
         type="text"
         className="todo-container__input"
-        placeholder="할일 입력"
+        placeholder="할 일 입력"
         required
       />
       <button type="submit" className="todo-container__button">
