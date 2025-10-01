@@ -3,6 +3,8 @@ import type { Movie, MovieResponse } from '../types/movie';
 import { tmdb } from '../lib/tmdb'
 import Spinner from '../components/Spinner';
 import ErrorBox from '../components/ErrorBox';
+import { Link } from 'react-router-dom';
+
 
 const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
 
@@ -56,14 +58,14 @@ export default function MoviesByCategory({ endpoint, title }: Props) {
           const img = m.poster_path ? `${IMG_BASE}${m.poster_path}` : '/placeholder.png';
           return (
             <li key={m.id} className="group relative overflow-hidden rounded-3xl bg-white/5 shadow-lg ring-1 ring-black/5 transition duration-300 hover:shadow-2xl">
-              <div className="relative aspect-[2/3]">
-                <img
-                  src={img}
-                  alt={m.title}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition duration-300 group-hover:blur-sm"
-                />
-
+              <Link to={`/movies/${m.id}`}>
+                <div className="relative aspect-[2/3]">
+                  <img
+                    src={img}
+                    alt={m.title}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition duration-300 group-hover:blur-sm"
+                  />
                 {/* hover 오버레이 */}
                 <div className="pointer-events-none absolute inset-0 flex flex-col justify-end p-4
                                 bg-gradient-to-t from-black/70 via-black/30 to-transparent
@@ -81,7 +83,9 @@ export default function MoviesByCategory({ endpoint, title }: Props) {
                   ★ {m.vote_average?.toFixed(1) ?? '-'}
                 </span>
               </div>
+              </Link>
             </li>
+            
           );
         })}
       </ul>
